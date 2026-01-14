@@ -1,188 +1,324 @@
 # Repository Structure
 
+This document describes the complete structure of the APEX SWE Harness repository.
+
 ## Overview
 
-This repository is organized for integration testing of AI models on software engineering tasks.
+The repository is organized into three main components:
 
-## Directory Layout
+1. **APEX Code Harness** (`apex_code/`) - Core evaluation engine
+2. **Integration Test Runner** (`integration/`) - Multi-model orchestration
+3. **Tasks** (`tasks/`) - Software engineering task definitions
+
+## Directory Tree
 
 ```
 apex-swe-harness/
-├── integration/              # Integration testing harness (main component)
-│   ├── src/apex_harness/     # Source code for test harness
-│   │   ├── cli.py            # Command-line interface
-│   │   ├── models.py         # Model registry (8 AI models)
-│   │   ├── runner.py         # Task execution orchestration
-│   │   ├── task_executor.py  # Individual task execution
-│   │   ├── status_tracker.py # Progress tracking (CSV)
-│   │   ├── task_discovery.py # Task scanning
-│   │   ├── docker_utils.py   # Docker resource management
-│   │   └── reporting.py      # Result reporting
-│   ├── tests/                # Test suite (40 tests)
-│   │   ├── test_cli.py       # CLI tests
-│   │   ├── test_models.py    # Model registry tests
-│   │   ├── test_integration.py # Integration tests
-│   │   └── ...
-│   ├── docs/                 # Documentation
-│   │   ├── ARCHITECTURE.md   # Design patterns and architecture
-│   │   ├── MIGRATION.md      # Migration from legacy scripts
-│   │   └── TESTING.md        # Testing guide
-│   ├── examples/             # Usage examples
-│   │   ├── basic_usage.sh    # Shell script examples
-│   │   └── python_usage.py   # Python API examples
-│   ├── scripts/              # Helper scripts
-│   │   ├── run_integ_set.sh  # Task set runner
-│   │   └── validate_refactoring.py # Regression validation
-│   ├── tasks/                # Task definitions (can also use ../tasks/)
-│   ├── artifacts/            # Generated outputs (gitignored)
-│   ├── README.md             # Integration harness documentation
-│   ├── QUICKSTART.md         # Quick start guide
-│   ├── pyproject.toml        # Package configuration
-│   ├── setup.py              # Setup script
-│   ├── pytest.ini            # Test configuration
-│   ├── LICENSE               # MIT License
-│   ├── CONTRIBUTING.md       # Contribution guidelines
-│   ├── CODE_OF_CONDUCT.md    # Code of conduct
-│   └── SECURITY.md           # Security policy
 │
-├── tasks/                    # Shared task definitions (optional)
-│   ├── 1-aws-s3-snapshots/
+├── apex_code/                   # Core APEX harness (apx command)
+│   ├── cli/                     # Command-line interface
+│   │   ├── main.py              # Main CLI entry point
+│   │   ├── datasets/            # Dataset management commands
+│   │   ├── reports/             # Report generation commands
+│   │   ├── runs/                # Run management commands
+│   │   ├── tasks/               # Task management commands
+│   │   └── utils/               # CLI utilities
+│   ├── harness/                 # Core evaluation engine
+│   │   ├── docker_manager.py    # Docker container management
+│   │   ├── evaluator.py         # Task evaluation logic
+│   │   ├── executor.py          # Task execution
+│   │   ├── multi_step_runner.py # Multi-step task orchestration
+│   │   └── terminal_manager.py  # Terminal interaction
+│   ├── llms/                    # AI model adapters
+│   │   ├── base_llm.py          # Base LLM interface
+│   │   ├── llm.py               # Main LLM implementation
+│   │   ├── mock_llm.py          # Mock for testing
+│   │   └── oracle_llm.py        # Oracle model
+│   ├── tools/                   # Tool execution framework
+│   │   ├── file_tool.py         # File manipulation tools
+│   │   ├── terminal_tool.py     # Terminal command tools
+│   │   ├── todo_tool.py         # Todo tracking tools
+│   │   └── tool_executor.py     # Tool execution engine
+│   ├── utils/                   # Utilities
+│   │   ├── logging_utils.py     # Logging configuration
+│   │   └── prompt_utils.py      # Prompt templating
+│   ├── config.py                # Configuration management
+│   ├── pyproject.toml           # Package configuration
+│   ├── setup.py                 # Setup script
+│   └── README.md                # APEX harness documentation
+│
+├── integration/                 # Integration test runner (apex-runner command)
+│   ├── src/apex_harness/        # Runner implementation
+│   │   ├── __init__.py          # Package initialization
+│   │   ├── cli.py               # Unified CLI entry point
+│   │   ├── models.py            # Model registry and configs (Strategy pattern)
+│   │   ├── status_tracker.py   # CSV status tracking
+│   │   ├── task_discovery.py   # Task discovery logic
+│   │   ├── task_executor.py    # Task execution (calls apx)
+│   │   ├── runner.py            # Sequential/parallel orchestration
+│   │   ├── reporting.py         # Result reporting
+│   │   └── docker_utils.py      # Docker cleanup utilities
+│   ├── tests/                   # Comprehensive test suite (40 tests)
+│   │   ├── __init__.py
+│   │   ├── test_models.py       # Model config tests
+│   │   ├── test_status_tracker.py # Status tracking tests
+│   │   ├── test_task_discovery.py # Task discovery tests
+│   │   ├── test_cli.py          # CLI tests
+│   │   ├── test_reporting.py    # Reporting tests
+│   │   └── test_integration.py  # End-to-end integration tests
+│   ├── scripts/                 # Utility scripts
+│   │   ├── run_integ_set.sh     # Legacy wrapper (backward compatibility)
+│   │   └── validate_refactoring.py # Regression validation script
+│   ├── docs/                    # Documentation
+│   │   ├── ARCHITECTURE.md      # Architecture decisions
+│   │   ├── MIGRATION.md         # Migration guide
+│   │   └── TESTING.md           # Testing guide
+│   ├── examples/                # Usage examples
+│   │   ├── basic_usage.sh       # Shell examples
+│   │   └── python_usage.py      # Python API examples
+│   ├── artifacts/               # Generated artifacts (gitignored)
+│   │   └── .gitkeep
+│   ├── pyproject.toml           # Package configuration
+│   ├── pytest.ini               # Pytest configuration
+│   ├── setup.py                 # Setup script
+│   ├── CONTRIBUTING.md          # Contribution guidelines
+│   ├── CODE_OF_CONDUCT.md       # Code of conduct
+│   ├── SECURITY.md              # Security policy
+│   ├── LICENSE                  # MIT License
+│   ├── QUICKSTART.md            # Quick start guide
+│   ├── REFACTORING_SUMMARY.md   # Refactoring summary
+│   └── README.md                # Integration runner documentation
+│
+├── tasks/                       # Task definitions
+│   ├── 1-aws-s3-snapshots/      # Example task
+│   │   ├── task.yaml            # Task configuration
+│   │   ├── task-spec.md         # Task specification
+│   │   ├── Dockerfile           # Task environment
+│   │   ├── docker-compose.yaml  # Services configuration
+│   │   ├── solution.py          # Reference solution
+│   │   ├── rubric/
+│   │   │   └── rubric.json      # Evaluation rubric
+│   │   └── tests/
+│   │       └── test_*.py        # Test suite
 │   ├── 2-localstack-s3-snapshots/
-│   └── ...
+│   ├── 3-localstack-s3-snapshots/
+│   ├── 4-localstack-notifications/
+│   └── 5-localstack-s3-notifications/
 │
-├── temp/                     # Legacy scripts (read-only, temporary)
-│   ├── *_run_all_tasks.py    # Original duplicated scripts
-│   ├── apex_code/            # Original codebase
-│   └── tasks/                # Original task definitions
+├── temp/                        # Legacy code (to be removed after verification)
+│   ├── apex_code/               # Original APEX harness
+│   ├── tasks/                   # Original tasks
+│   └── *_run_all_tasks.py       # Legacy task runner scripts
 │
-├── observability/            # Observability features (if any)
-│
-├── .github/                  # GitHub configuration
+├── .github/                     # GitHub configuration
 │   └── workflows/
-│       └── ci.yml            # CI/CD pipeline
+│       └── ci.yml               # CI/CD pipeline
 │
-├── .gitignore                # Git ignore rules
-├── README.md                 # Repository overview
-└── STRUCTURE.md              # This file
+├── .editorconfig                # Editor configuration
+├── .gitignore                   # Git ignore rules
+├── README.md                    # Main documentation
+├── INSTALL.md                   # Installation guide
+├── STRUCTURE.md                 # This file
+└── LICENSE                      # MIT License (duplicated from integration/)
+
 ```
 
-## Key Components
+## Component Relationships
 
-### Integration Harness (`integration/`)
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     User / CI/CD Pipeline                        │
+└──────────────┬──────────────────────────────────────────────────┘
+               │
+               ├──► apex-runner (integration/src/apex_harness/cli.py)
+               │    │
+               │    ├──► Model Registry (models.py)
+               │    ├──► Task Discovery (task_discovery.py)
+               │    ├──► Task Executor (task_executor.py)
+               │    │    │
+               │    │    └──► Calls: apx reports run [OPTIONS]
+               │    │         │
+               │    └──────────┘
+               │
+               └──► apx (apex_code/cli/main.py)
+                    │
+                    ├──► tasks - List/validate tasks
+                    ├──► reports - Run evaluations
+                    │    │
+                    │    ├──► Harness (harness/executor.py)
+                    │    │    │
+                    │    │    ├──► Docker Manager
+                    │    │    ├──► LLM Adapters
+                    │    │    └──► Tool Executors
+                    │    │
+                    │    └──► Evaluator (harness/evaluator.py)
+                    │
+                    ├──► runs - Manage evaluation runs
+                    └──► datasets - Manage datasets
+```
 
-The main component - a production-grade harness for running integration tests:
+## Data Flow
 
-- **Unified CLI**: Single `apex-runner` command replaces 8+ duplicate scripts
-- **Model Registry**: Easy configuration for 8 AI models
-- **Parallel Execution**: Thread-safe concurrent task execution
-- **Progress Tracking**: Real-time CSV status tracking
-- **Docker Management**: Automatic cleanup of Docker resources
-- **40+ Tests**: Comprehensive unit and integration tests
-- **Zero Regression**: Validated against original implementation
+```
+1. User runs: apex-runner --model claude --tasks task1 --parallel
 
-### Tasks (`tasks/` or `integration/tasks/`)
+2. Integration runner:
+   ├─ Discovers tasks from tasks/ directory
+   ├─ Loads model config from MODEL_REGISTRY
+   ├─ Creates status CSV tracker
+   └─ For each task:
+      ├─ Constructs apx command:
+      │  apx reports run <report-name> \
+      │    --tasks <task> \
+      │    --models <model-id> \
+      │    --n-trials 3 \
+      │    --max-workers 3 \
+      │    --timeout 3600
+      │
+      └─ Executes command → APEX harness
 
-Task definitions for integration tests. Can be placed either:
-- At repository root: `tasks/`
-- Within integration: `integration/tasks/`
+3. APEX harness (apx):
+   ├─ Parses task from tasks/ directory
+   ├─ Spins up Docker container
+   ├─ Initializes LLM adapter
+   ├─ Runs task with AI model
+   ├─ Evaluates results against rubric
+   └─ Generates report
 
-The harness will look in both locations (root takes precedence).
+4. Integration runner:
+   ├─ Tracks status in CSV
+   └─ Prints summary
+```
 
-### Legacy Code (`temp/`)
-
-Original cluttered implementation preserved for:
-- Regression validation
-- Output comparison
-- Migration reference
-
-**Will be removed** once migration is complete and validated.
-
-## Usage
-
-### Installation
+## Installation Flow
 
 ```bash
-cd integration
+# 1. Install APEX harness (provides apx command)
+cd apex_code
 pip install -e .
+
+# 2. Install integration runner (provides apex-runner command)
+cd ../integration
+pip install -e .
+
+# Both are now available:
+apx --help
+apex-runner --help
 ```
 
-### Running Tests
+## Key Files
 
-```bash
-# From integration directory
-apex-runner --model claude --parallel
+### Configuration
+- `apex_code/pyproject.toml` - APEX harness package config
+- `integration/pyproject.toml` - Integration runner package config
+- `integration/src/apex_harness/models.py` - Model registry
 
-# Or specify path
-apex-runner --model claude --tasks-dir ../tasks
+### Entry Points
+- `apex_code/cli/main.py` - `apx` command entry point
+- `integration/src/apex_harness/cli.py` - `apex-runner` command entry point
+
+### Core Logic
+- `apex_code/harness/executor.py` - Task execution engine
+- `integration/src/apex_harness/task_executor.py` - Command construction
+
+### Testing
+- `integration/tests/` - Unit and integration tests (40 tests)
+- `integration/scripts/validate_refactoring.py` - Regression validation
+
+### Documentation
+- `README.md` - Main overview
+- `apex_code/README.md` - APEX harness docs
+- `integration/README.md` - Integration runner docs
+- `INSTALL.md` - Installation guide
+- `integration/docs/ARCHITECTURE.md` - Architecture decisions
+- `integration/docs/MIGRATION.md` - Migration from legacy scripts
+
+## Generated Artifacts
+
+All generated files go to `integration/artifacts/` (gitignored):
+
+```
+integration/artifacts/
+├── claude_tasks_status_20260114-120000.csv
+├── gemini_tasks_status_20260114-120500.csv
+├── deepseek_tasks_status_20260114-121000.csv
+└── ... (other model CSVs and reports)
 ```
 
-### Development
+## Legacy Code
+
+The `temp/` directory contains the original cluttered codebase:
+- Used for regression validation
+- To be removed after final verification
+- **Do not modify or use for new development**
+
+## Development Workflow
 
 ```bash
+# 1. Make changes to code
+
+# 2. Run tests
 cd integration
+pytest tests/ -v
 
-# Run tests
-pytest tests/
-
-# Validate refactoring
+# 3. Validate refactoring
 python scripts/validate_refactoring.py
+
+# 4. Format code
+black src/ tests/
+
+# 5. Lint
+ruff check src/ tests/
+
+# 6. Commit changes
+git add .
+git commit -m "feat: your changes"
 ```
 
-## Migration Status
+## CI/CD Pipeline
 
-✅ **Complete**
-- All code moved to `integration/`
-- All tests passing (40/40)
-- Zero regression validated
-- Documentation updated
-- CI/CD updated
+GitHub Actions workflow (`.github/workflows/ci.yml`):
 
-## Design Philosophy
+1. **Lint** - Run code quality checks
+2. **Test** - Run 40 unit/integration tests
+3. **Build** - Build both packages
+4. **Deploy** (future) - Publish to PyPI
 
-### Why `integration/`?
+## Design Patterns
 
-The harness is specifically for **integration testing** of AI models:
-1. Tests run in isolated Docker environments
-2. Evaluates end-to-end task completion
-3. Measures AI model performance on real tasks
-4. Not unit/functional testing - true integration tests
+### Strategy Pattern
+- Location: `integration/src/apex_harness/models.py`
+- Purpose: Model-specific configurations
+- Benefit: Easy to add new models
 
-### Separation of Concerns
+### Factory Pattern
+- Location: `apex_code/harness/executor.py`
+- Purpose: Create appropriate executors
+- Benefit: Flexible execution strategies
 
-- `integration/`: Test harness and tooling
-- `tasks/`: Test definitions and specifications
-- `temp/`: Legacy code (temporary)
-- Root: Repository organization and documentation
+### Dependency Injection
+- Throughout codebase
+- Purpose: Testable, modular components
+- Benefit: Easy mocking and testing
 
-## Documentation
+## Version Compatibility
 
-- **Main README**: [integration/README.md](integration/README.md)
-- **Quick Start**: [integration/QUICKSTART.md](integration/QUICKSTART.md)
-- **Architecture**: [integration/docs/ARCHITECTURE.md](integration/docs/ARCHITECTURE.md)
-- **Migration**: [integration/docs/MIGRATION.md](integration/docs/MIGRATION.md)
-- **Testing**: [integration/docs/TESTING.md](integration/docs/TESTING.md)
-- **Contributing**: [integration/CONTRIBUTING.md](integration/CONTRIBUTING.md)
-- **This File**: [STRUCTURE.md](STRUCTURE.md) (repository overview)
+- **Python**: 3.10+
+- **Docker**: Any recent version
+- **OS**: Linux, macOS, Windows (with WSL2)
 
-## Maintenance
+## Next Steps
 
-### Adding New Models
+1. ✅ Setup complete
+2. ✅ Tests passing (40/40)
+3. ✅ Zero regression validated
+4. 🔄 Ready for testing on EC2
+5. 📦 Ready for production use
+6. ⏳ Remove `temp/` after final verification
 
-1. Edit `integration/src/apex_harness/models.py`
-2. Add test in `integration/tests/test_models.py`
-3. Update documentation
+---
 
-### Adding New Tasks
-
-1. Create task directory in `tasks/` or `integration/tasks/`
-2. Follow existing task structure
-3. Test with `apex-runner --tasks your-new-task`
-
-### Running Validation
-
-```bash
-cd integration
-python scripts/validate_refactoring.py
-```
-
-Expected: All validations pass, confirming zero regression.
+For more details, see:
+- [README.md](README.md) - Main overview
+- [INSTALL.md](INSTALL.md) - Installation
+- [integration/docs/ARCHITECTURE.md](integration/docs/ARCHITECTURE.md) - Architecture
